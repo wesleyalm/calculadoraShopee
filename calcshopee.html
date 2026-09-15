@@ -77,7 +77,7 @@
             margin-bottom: 16px;
         }
 
-label {
+        label {
             display: block;
             font-weight: 600;
             font-size: 0.9rem;
@@ -391,6 +391,16 @@ label {
                 <div class="tier-details" id="detalhes2x">Custo Base: R$ 0,00</div>
                 <button class="btn-shopee" onclick="abrirModalShopee('Multiplicador 2x', meta2xVal)">Enviar pra Shopee</button>
             </div>
+
+            <!-- 2.3x Custo -->
+            <div class="tier-box">
+                <div class="tier-header">
+                    <span class="tier-title">Multiplicador 2.3x</span>
+                    <span class="tier-price" id="val23x">R$ 0,00</span>
+                </div>
+                <div class="tier-details" id="detalhes23x">Custo Base: R$ 0,00</div>
+                <button class="btn-shopee" onclick="abrirModalShopee('Multiplicador 2.3x', meta23xVal)">Enviar pra Shopee</button>
+            </div>
         </div>
     </div>
 
@@ -428,6 +438,7 @@ let meta30Val = 0;
 let meta50Val = 0;
 let meta70Val = 0;
 let meta2xVal = 0;
+let meta23xVal = 0;
 
 function toggleAdvanced() {
     const section = document.getElementById('advancedSettings');
@@ -503,7 +514,6 @@ function calcular() {
     const percPerda = (parseFloat(document.getElementById('cfgPerda').value) || 5) / 100;
     const custoEmbalagem = parseFloat(document.getElementById('cfgEmbalagem').value) || 0.50;
 
-    // CORREÇÃO DA FORMULA DE PERDA APLICADA A TODO O CUSTO BASE (IGUAL À PLANILHA)
     const custoFilamentoPuro = (precoFilamentoKg / 1000) * pesoGramas;
     const custoEnergia = tempoHoras * custoEnergiaHora;
     const custoDesgaste = tempoHoras * desgastePorHora;
@@ -515,6 +525,7 @@ function calcular() {
     meta50Val = custoProducaoBase * 1.50;
     meta70Val = custoProducaoBase * 1.70;
     meta2xVal = custoProducaoBase * 2.00;
+    meta23xVal = custoProducaoBase * 2.30;
 
     document.getElementById('val30').innerText = "R$ " + meta30Val.toFixed(2).replace('.', ',');
     document.getElementById('detalhes30').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
@@ -527,6 +538,9 @@ function calcular() {
 
     document.getElementById('val2x').innerText = "R$ " + meta2xVal.toFixed(2).replace('.', ',');
     document.getElementById('detalhes2x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+
+    document.getElementById('val23x').innerText = "R$ " + meta23xVal.toFixed(2).replace('.', ',');
+    document.getElementById('detalhes23x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
 }
 
 function abrirModalShopee(tituloCenario, valorAlvo) {
