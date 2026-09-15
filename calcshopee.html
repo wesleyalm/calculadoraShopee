@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MWfix - Calculadora 3D & Shopee</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ee4d2d">
     <style>
         :root {
             --primary: #ee4d2d;
@@ -409,7 +411,7 @@
     </footer>
 </div>
 
-<!-- Modal / Pop-up de Resultado de Anúncio na Shopee -->
+<!-- Modal / Pop-up de Envio para Shopee -->
 <div id="shopeeModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="fecharModalShopee()">&times;</span>
@@ -576,6 +578,14 @@ window.onclick = function(event) {
 }
 
 window.onload = calcular;
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('Service Worker registrado com sucesso!'))
+      .catch((err) => console.log('Erro ao registrar Service Worker:', err));
+  }
 </script>
 
 </body>
