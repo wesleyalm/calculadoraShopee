@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MWfix - Calculadora 3D & Shopee</title>
+    <style>
+        :root {
+            --primary: #ee4d2d;
+            --primary-dark: #d73211;
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-main: #222222;
+            --text-secondary: #555555;
+            --border-color: #e0e0e0;
+            --success: #26aa99;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.15);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .results-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .tier-box {
+            background: #fff5f2;
+            border: 1px dashed rgba(238, 77, 45, 0.4);
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .tier-title {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .tier-price {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .tier-details {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .btn-shopee {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-shopee:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .accordion-btn {
+            background: #f0f0f2;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .advanced-settings {
+            display: none;
+            background: #fafafa;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Modal / Pop-up de Envio para Shopee */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        .shopee-highlight {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: #fff5f2;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 14px 0;
+            border: 1px dashed rgba(238, 77, 45, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>MWfix - Calculadora 3D & Shopee</h1>
+        <p>Precificação exata com simulação de cenários e repasse de custos para a Shopee.</p>
+    </header>
+
+    <div class="grid-2">
+        <!-- Coluna de Entradas -->
+        <div class="card">
+            <div class="results-header">Dados do Item (Fatiador)</div>
+            
+            <div class="form-group">
+                <label for="pesoFilamento">Peso do Item impresso (gramas)</label>
+                <input type="number" id="pesoFilamento" value="50" step="1" min="0" oninput="calcular()" placeholder="Ex: 50">
+            </div>
+
+            <div class="form-group">
+                <label for="tempoProducao">Tempo Total de Produção (horas)</label>
+                <input type="number" id="tempoProducao" value="4.5" step="0.1" min="0" oninput="calcular()" placeholder="Ex: 4.5">
+            </div>
+
+            <!-- Aba de Configurações Temporárias -->
+            <button type="button" class="accordion-btn" onclick="toggleAdvanced()">
+                ⚙️ Configurações de Custos (Sessão Atual) <span id="arrow">▼</span>
+            </button>
+
+            <div id="advancedSettings" class="advanced-settings">
+                <div class="form-group">
+                    <label for="cfgFilamento">Filamento (R$ / kg)</label>
+                    <input type="number" id="cfgFilamento" value="120.00" step="0.01" min="0" oninput="calcular()">
+                </div>
+                <div class="form-group">
+                    <label for="cfgEnergia">Energia (R$ / hora)</label>
+                    <input type="number" id="cfgEnergia" value="0.20" step="0.01" min="0" oninput="calcular()">
+                </div>
+                <div class="form-group">
+                    <label for="cfgDesgaste">Desgaste da Máquina (R$ / hora)</label>
+                    <input type="number" id="cfgDesgaste" value="0.86" step="0.01" min="0" oninput="calcular()">
+                </div>
+                <div class="form-group">
+                    <label for="cfgPerda">Porcentagem de Perda (%)</label>
+                    <input type="number" id="cfgPerda" value="5" step="1" min="0" oninput="calcular()">
+                </div>
+                <div class="form-group">
+                    <label for="cfgEmbalagem">Embalagem (R$)</label>
+                    <input type="number" id="cfgEmbalagem" value="0.50" step="0.01" min="0" oninput="calcular()">
+                </div>
+            </div>
+
+            <div class="results-header" style="margin-top: 10px;">Parâmetros de Venda na Shopee</div>
+
+            <div class="form-group">
+                <label for="freteGratis">Participação em Frete Grátis Extra</label>
+                <select id="freteGratis" onchange="calcular()">
+                    <option value="0.06">Sim (6% adicional)</option>
+                    <option value="0" selected>Não</option>
+                </select>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="tipoConta" onchange="calcular()">
+                <label for="tipoConta">Vender via CPF (Adicionar taxa de R$ 3,00)</label>
+            </div>
+        </div>
+
+        <!-- Coluna de Resultados (Cenários de Lucro) -->
+        <div class="card">
+            <div class="results-header">Cenários de Meta (Valor Líquido Desejado)</div>
+
+            <!-- 30% Lucro -->
+            <div class="tier-box">
+                <div class="tier-header">
+                    <span class="tier-title">Lucro de 30%</span>
+                    <span class="tier-price" id="val30">R$ 0,00</span>
+                </div>
+                <div class="tier-details" id="detalhes30">Custo Base: R$ 0,00</div>
+                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 30%', meta30Val)">Enviar pra Shopee</button>
+            </div>
+
+            <!-- 50% Lucro -->
+            <div class="tier-box">
+                <div class="tier-header">
+                    <span class="tier-title">Lucro de 50%</span>
+                    <span class="tier-price" id="val50">R$ 0,00</span>
+                </div>
+                <div class="tier-details" id="detalhes50">Custo Base: R$ 0,00</div>
+                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 50%', meta50Val)">Enviar pra Shopee</button>
+            </div>
+
+            <!-- 70% Lucro -->
+            <div class="tier-box">
+                <div class="tier-header">
+                    <span class="tier-title">Lucro de 70%</span>
+                    <span class="tier-price" id="val70">R$ 0,00</span>
+                </div>
+                <div class="tier-details" id="detalhes70">Custo Base: R$ 0,00</div>
+                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 70%', meta70Val)">Enviar pra Shopee</button>
+            </div>
+
+            <!-- 2x Custo -->
+            <div class="tier-box">
+                <div class="tier-header">
+                    <span class="tier-title">Multiplicador 2x</span>
+                    <span class="tier-price" id="val2x">R$ 0,00</span>
+                </div>
+                <div class="tier-details" id="detalhes2x">Custo Base: R$ 0,00</div>
+                <button class="btn-shopee" onclick="abrirModalShopee('Multiplicador 2x', meta2xVal)">Enviar pra Shopee</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        MWfix 3D Printing & Solutions - Ferramenta de Precificação para Marketplaces.
+    </footer>
+</div>
+
+<!-- Modal / Pop-up de Resultado de Anúncio na Shopee -->
+<div id="shopeeModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="fecharModalShopee()">&times;</span>
+        <div class="results-header" id="modalTitulo">Anúncio na Shopee</div>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Para receber o valor líquido desejado nesta modalidade, o preço de anúncio exato na Shopee deve ser:</p>
+        
+        <div class="shopee-highlight" id="modalPrecoFinal">R$ 0,00</div>
+        
+        <div class="result-row">
+            <span class="result-label">Faixa Shopee Aplicada:</span>
+            <span class="result-value" id="modalFaixa">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Comissão da Plataforma:</span>
+            <span class="result-value" id="modalComissao">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Taxa Fixa + Outras:</span>
+            <span class="result-value" id="modalTaxas">-</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let meta30Val = 0;
+let meta50Val = 0;
+let meta70Val = 0;
+let meta2xVal = 0;
+
+function toggleAdvanced() {
+    const section = document.getElementById('advancedSettings');
+    const arrow = document.getElementById('arrow');
+    if (section.style.display === 'block') {
+        section.style.display = 'none';
+        arrow.innerText = '▼';
+    } else {
+        section.style.display = 'block';
+        arrow.innerText = '▲';
+    }
+}
+
+function calcularComissaoFixa(precoBruto) {
+    let comissaoPorcentagem = 0.14; 
+    let taxaFixa = 26.00; 
+    let faixaNome = "Acima de R$ 500,00";
+
+    if (precoBruto <= 79.99) {
+        comissaoPorcentagem = 0.20;
+        taxaFixa = 4.00;
+        faixaNome = "Até R$ 79,99 (20% + R$ 4)";
+    } else if (precoBruto <= 99.99) {
+        comissaoPorcentagem = 0.14;
+        taxaFixa = 16.00;
+        faixaNome = "R$ 80 a R$ 99,99 (14% + R$ 16)";
+    } else if (precoBruto <= 199.99) {
+        comissaoPorcentagem = 0.14;
+        taxaFixa = 20.00;
+        faixaNome = "R$ 100 a R$ 199,99 (14% + R$ 20)";
+    } else if (precoBruto <= 499.99) {
+        comissaoPorcentagem = 0.14;
+        taxaFixa = 26.00;
+        faixaNome = "R$ 200 a R$ 499,99 (14% + R$ 26)";
+    } else {
+        comissaoPorcentagem = 0.14;
+        taxaFixa = 26.00;
+        faixaNome = "Acima de R$ 500,00 (14% + R$ 26)";
+    }
+
+    return { comissaoPorcentagem, taxaFixa, faixaNome };
+}
+
+// Dado o valor alvo desejado (Custo + Lucro Líquido), descobre qual deve ser o Preço de Venda Bruto na Shopee
+function calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxaCpf) {
+    // Estimativa inicial
+    let p = (valorAlvo + 26) / (1 - 0.14 - taxaFreteExtraPercent);
+    if (p < 10) p = 50;
+
+    for (let i = 0; i < 100; i++) {
+        let regras = calcularComissaoFixa(p);
+        let comissaoPorcentagem = regras.comissaoPorcentagem;
+        let taxaFixa = regras.taxaFixa;
+
+        let denominador = (1 - comissaoPorcentagem - taxaFreteExtraPercent);
+        if (denominador <= 0) denominador = 0.01;
+        
+        let novoP = (valorAlvo + taxaFixa + taxaCpf) / denominador;
+        if (Math.abs(novoP - p) < 0.001) {
+            p = novoP;
+            break;
+        }
+        p = novoP;
+    }
+    return p;
+}
+
+function calcular() {
+    const pesoGramas = parseFloat(document.getElementById('pesoFilamento').value) || 0;
+    const tempoHoras = parseFloat(document.getElementById('tempoProducao').value) || 0;
+
+    // Custos carregados (com suporte à aba temporária)
+    const precoFilamentoKg = parseFloat(document.getElementById('cfgFilamento').value) || 120.00;
+    const custoEnergiaHora = parseFloat(document.getElementById('cfgEnergia').value) || 0.20;
+    const desgastePorHora = parseFloat(document.getElementById('cfgDesgaste').value) || 0.86;
+    const percPerda = (parseFloat(document.getElementById('cfgPerda').value) || 5) / 100;
+    const custoEmbalagem = parseFloat(document.getElementById('cfgEmbalagem').value) || 0.50;
+
+    // Custos 3D
+    const custoFilamentoPuro = (precoFilamentoKg / 1000) * pesoGramas;
+    const custoFilamentoComPerda = custoFilamentoPuro * (1 + percPerda);
+    const custoEnergia = tempoHoras * custoEnergiaHora;
+    const custoDesgaste = tempoHoras * desgastePorHora;
+
+    const custoProducaoBase = custoFilamentoComPerda + custoEnergia + custoDesgaste + custoEmbalagem;
+
+    // Cálculo dos valores líquidos alvo para cada regra:
+    // Custo Base + Margem (sobre o custo base)
+    meta30Val = custoProducaoBase * 1.30;
+    meta50Val = custoProducaoBase * 1.50;
+    meta70Val = custoProducaoBase * 1.70;
+    meta2xVal = custoProducaoBase * 2.00;
+
+    // Atualiza interface com os valores líquidos alvo
+    document.getElementById('val30').innerText = "R$ " + meta30Val.toFixed(2).replace('.', ',');
+    document.getElementById('detalhes30').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+
+    document.getElementById('val50').innerText = "R$ " + meta50Val.toFixed(2).replace('.', ',');
+    document.getElementById('detalhes50').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+
+    document.getElementById('val70').innerText = "R$ " + meta70Val.toFixed(2).replace('.', ',');
+    document.getElementById('detalhes70').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+
+    document.getElementById('val2x').innerText = "R$ " + meta2xVal.toFixed(2).replace('.', ',');
+    document.getElementById('detalhes2x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+}
+
+function abrirModalShopee(tituloCenario, valorAlvo) {
+    const taxaFreteExtraPercent = parseFloat(document.getElementById('freteGratis').value) || 0;
+    const usaCpf = document.getElementById('tipoConta').checked;
+    const taxaCpf = usaCpf ? 3.00 : 0.00;
+
+    const precoAnuncioShopee = calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxaCpf);
+    const regras = calcularComissaoFixa(precoAnuncioShopee);
+
+    const valorComissao = precoAnuncioShopee * regras.comissaoPorcentagem;
+    const valorFreteExtra = precoAnuncioShopee * taxaFreteExtraPercent;
+    const totalTaxasFixas = regras.taxaFixa + taxaCpf + valorFreteExtra;
+
+    document.getElementById('modalTitulo').innerText = "Shopee: " + tituloCenario;
+    document.getElementById('modalPrecoFinal').innerText = "R$ " + precoAnuncioShopee.toFixed(2).replace('.', ',');
+    document.getElementById('modalFaixa').innerText = regras.faixaNome;
+    document.getElementById('modalComissao').innerText = "R$ " + valorComissao.toFixed(2).replace('.', ',') + ` (${(regras.comissaoPorcentagem*100).toFixed(0)}%)`;
+    document.getElementById('modalTaxas').innerText = "R$ " + totalTaxasFixas.toFixed(2).replace('.', ',');
+
+    document.getElementById('shopeeModal').style.display = 'flex';
+}
+
+function fecharModalShopee() {
+    document.getElementById('shopeeModal').style.display = 'none';
+}
+
+// Fecha modal clicando fora do conteúdo
+window.onclick = function(event) {
+    const modal = document.getElementById('shopeeModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+window.onload = calcular;
+</script>
+
+</body>
+</html>
