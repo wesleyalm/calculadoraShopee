@@ -302,8 +302,8 @@
             </div>
 
             <div class="form-group">
-                <label for="tempoProducao">Tempo Total de Produção (horas)</label>
-                <input type="number" id="tempoProducao" value="4.5" step="0.1" min="0" oninput="calcular()" placeholder="Ex: 4.5">
+                <label for="tempoProducao">Tempo de Produção (Ex: 1:20 ou 4h30m)</label>
+                <input type="text" id="tempoProducao" value="4:30" oninput="calcular()" placeholder="Ex: 1:20 ou 4h30m">
             </div>
 
             <!-- Aba de Configurações Temporárias -->
@@ -454,6 +454,34 @@ function toggleAdvanced() {
     }
 }
 
+// Converte string de tempo do formato do fatiador (ex: "1:20", "1h20m", "1.33", "90") para horas decimais reais
+function parseTempoEmHoras(inputStr) {
+    if (!inputStr) return 0;
+    let str = String(inputStr).trim().toLowerCase();
+
+    // Se tiver formato HH:MM (ex: 1:20 ou 01:20)
+    if (str.includes(':')) {
+        let partes = str.split(':');
+        let horas = parseFloat(partes[0]) || 0;
+        let minutos = parseFloat(partes[1]) || 0;
+        return horas + (minutos / 60);
+    }
+
+    // Se tiver formato com h/m (ex: 4h30m ou 4h ou 30m)
+    if (str.includes('h') || str.includes('m')) {
+        let horas = 0;
+        let minutos = 0;
+        let hMatch = str.match(/(\d+)\s*h/);
+        let mMatch = str.match(/(\d+)\s*m/);
+        if (hMatch) horas = parseFloat(hMatch[1]) || 0;
+        if (mMatch) minutos = parseFloat(mMatch[1]) || 0;
+        return horas + (minutos / 60);
+    }
+
+    // Caso digite apenas um número decimal puro (ex: 4.5)
+    return parseFloat(str) || 0;
+}
+
 function calcularComissaoFixa(precoBruto) {
     let comissaoPorcentagem = 0.14; 
     let taxaFixa = 26.00; 
@@ -461,7 +489,7 @@ function calcularComissaoFixa(precoBruto) {
 
     if (precoBruto <= 79.99) {
         comissaoPorcentagem = 0.20;
-        taxaFixa = 4.50; // Atualizado para R$ 4,50 a partir de 01/10/2026 conforme e-mail oficial da Shopee
+        taxaFixa = 4.50;
         faixaNome = "Até R$ 79,99 (20% + R$ 4,50)";
     } else if (precoBruto <= 99.99) {
         comissaoPorcentagem = 0.14;
@@ -508,7 +536,8 @@ function calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxa
 
 function calcular() {
     const pesoGramas = parseFloat(document.getElementById('pesoFilamento').value) || 0;
-    const tempoHoras = parseFloat(document.getElementById('tempoProducao').value) || 0;
+    const tempoInput = document.getElementById('tempoProducao').value;
+    const tempoHoras = parseTempoEmHoras(tempoInput);
 
     const precoFilamentoKg = parseFloat(document.getElementById('cfgFilamento').value) || 120.00;
     const custoEnergiaHora = parseFloat(document.getElementById('cfgEnergia').value) || 0.20;
