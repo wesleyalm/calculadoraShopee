@@ -513,27 +513,48 @@ function calcularComissaoFixa(precoBruto) {
 }
 
 function calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxaCpf) {
-    let p = (valorAlvo + 26) / (1 - 0.14 - taxaFreteExtraPercent);
-    if (p < 10) p = 50;
+    const faixas = [
+        [0, 79.99],
+        [80, 99.99],
+        [100, 199.99],
+        [200, 499.99],
+        [500, Infinity]
+    ];
 
-    for (let i = 0; i < 100; i++) {
-        let regras = calcularComissaoFixa(p);
-        let comissaoPorcentagem = regras.comissaoPorcentagem;
-        let taxaFixa = regras.taxaFixa;
+    let melhorPreco = Infinity;
 
-        let denominador = (1 - comissaoPorcentagem - taxaFreteExtraPercent);
-        if (denominador <= 0) denominador = 0.01;
-        
-        let novoP = (valorAlvo + taxaFixa + taxaCpf) / denominador;
-        if (Math.abs(novoP - p) < 0.001) {
-            p = novoP;
-            break;
+    for (const [minimo, maximo] of faixas) {
+        const regras = calcularComissaoFixa(minimo);
+
+        const fator = 1 -
+            regras.comissaoPorcentagem -
+            taxaFreteExtraPercent;
+
+        if (fator <= 0) continue;
+
+        let preco = Math.max(
+            minimo,
+            (valorAlvo + regras.taxaFixa + taxaCpf) / fator
+        );
+
+        preco = Math.ceil(preco * 100 - 1e-9) / 100;
+
+        if (preco > maximo) continue;
+
+        const liquido =
+            preco * fator - regras.taxaFixa - taxaCpf;
+
+        if (liquido + 1e-7 < valorAlvo) {
+            preco = Number((preco + 0.01).toFixed(2));
         }
-        p = novoP;
-    }
-    return p;
-}
 
+        if (preco <= maximo && preco < melhorPreco) {
+            melhorPreco = preco;
+        }
+    }
+
+    return melhorPreco;
+}
 function calcular() {
     const pesoGramas = parseFloat(document.getElementById('pesoFilamento').value) || 0;
     const tempoInput = document.getElementById('tempoProducao').value;
