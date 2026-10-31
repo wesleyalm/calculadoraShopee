@@ -225,7 +225,6 @@
             color: var(--text-main);
         }
 
-        /* Modal / Pop-up de Envio para Shopee */
         .modal {
             display: none;
             position: fixed;
@@ -292,10 +291,9 @@
     </header>
 
     <div class="grid-2">
-        <!-- Coluna de Entradas -->
         <div class="card">
             <div class="results-header">Dados do Item (Fatiador)</div>
-            
+
             <div class="form-group">
                 <label for="pesoFilamento">Peso do Item impresso (gramas)</label>
                 <input type="number" id="pesoFilamento" value="50" step="1" min="0" oninput="calcular()" placeholder="Ex: 50">
@@ -306,7 +304,6 @@
                 <input type="text" id="tempoProducao" value="4:30" oninput="calcular()" placeholder="Ex: 1:20 ou 4h30m">
             </div>
 
-            <!-- Aba de Configurações Temporárias -->
             <button type="button" class="accordion-btn" onclick="toggleAdvanced()">
                 ⚙️ Configurações de Custos (Sessão Atual) <span id="arrow">▼</span>
             </button>
@@ -350,7 +347,6 @@
             </div>
         </div>
 
-        <!-- Coluna de Resultados (Cenários de Lucro) -->
         <div class="card">
             <div class="results-header">Cenários de Meta (Valor Líquido Desejado)</div>
 
@@ -362,6 +358,16 @@
                 </div>
                 <div class="tier-details" id="detalhes30">Custo Base: R$ 0,00</div>
                 <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 30%', meta30Val)">Enviar pra Shopee</button>
+            </div>
+
+            <!-- 40% Lucro -->
+            <div class="tier-box">
+                <div class="tier-header">
+                    <span class="tier-title">Lucro de 40%</span>
+                    <span class="tier-price" id="val40">R$ 0,00</span>
+                </div>
+                <div class="tier-details" id="detalhes40">Custo Base: R$ 0,00</div>
+                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 40%', meta40Val)">Enviar pra Shopee</button>
             </div>
 
             <!-- 50% Lucro -->
@@ -411,15 +417,14 @@
     </footer>
 </div>
 
-<!-- Modal / Pop-up de Envio para Shopee -->
 <div id="shopeeModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="fecharModalShopee()">&times;</span>
         <div class="results-header" id="modalTitulo">Anúncio na Shopee</div>
         <p style="font-size: 0.9rem; color: var(--text-secondary);">Para receber o valor líquido desejado nesta modalidade, o preço de anúncio exato na Shopee deve ser:</p>
-        
+
         <div class="shopee-highlight" id="modalPrecoFinal">R$ 0,00</div>
-        
+
         <div class="result-row">
             <span class="result-label">Faixa Shopee Aplicada:</span>
             <span class="result-value" id="modalFaixa">-</span>
@@ -437,6 +442,7 @@
 
 <script>
 let meta30Val = 0;
+let meta40Val = 0;
 let meta50Val = 0;
 let meta70Val = 0;
 let meta2xVal = 0;
@@ -445,6 +451,7 @@ let meta23xVal = 0;
 function toggleAdvanced() {
     const section = document.getElementById('advancedSettings');
     const arrow = document.getElementById('arrow');
+
     if (section.style.display === 'block') {
         section.style.display = 'none';
         arrow.innerText = '▼';
@@ -454,12 +461,10 @@ function toggleAdvanced() {
     }
 }
 
-// Converte string de tempo do formato do fatiador (ex: "1:20", "1h20m", "1.33", "90") para horas decimais reais
 function parseTempoEmHoras(inputStr) {
     if (!inputStr) return 0;
     let str = String(inputStr).trim().toLowerCase();
 
-    // Se tiver formato HH:MM (ex: 1:20 ou 01:20)
     if (str.includes(':')) {
         let partes = str.split(':');
         let horas = parseFloat(partes[0]) || 0;
@@ -467,24 +472,24 @@ function parseTempoEmHoras(inputStr) {
         return horas + (minutos / 60);
     }
 
-    // Se tiver formato com h/m (ex: 4h30m ou 4h ou 30m)
     if (str.includes('h') || str.includes('m')) {
         let horas = 0;
         let minutos = 0;
         let hMatch = str.match(/(\d+)\s*h/);
         let mMatch = str.match(/(\d+)\s*m/);
+
         if (hMatch) horas = parseFloat(hMatch[1]) || 0;
         if (mMatch) minutos = parseFloat(mMatch[1]) || 0;
+
         return horas + (minutos / 60);
     }
 
-    // Caso digite apenas um número decimal puro (ex: 4.5)
     return parseFloat(str) || 0;
 }
 
 function calcularComissaoFixa(precoBruto) {
-    let comissaoPorcentagem = 0.14; 
-    let taxaFixa = 26.00; 
+    let comissaoPorcentagem = 0.14;
+    let taxaFixa = 26.00;
     let faixaNome = "Acima de R$ 500,00";
 
     if (precoBruto <= 79.99) {
@@ -555,6 +560,7 @@ function calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxa
 
     return melhorPreco;
 }
+
 function calcular() {
     const pesoGramas = parseFloat(document.getElementById('pesoFilamento').value) || 0;
     const tempoInput = document.getElementById('tempoProducao').value;
@@ -574,6 +580,7 @@ function calcular() {
     const custoProducaoBase = somaParcial * (1 + percPerda);
 
     meta30Val = custoProducaoBase * 1.30;
+    meta40Val = custoProducaoBase * 1.40;
     meta50Val = custoProducaoBase * 1.50;
     meta70Val = custoProducaoBase * 1.70;
     meta2xVal = custoProducaoBase * 2.00;
@@ -581,6 +588,9 @@ function calcular() {
 
     document.getElementById('val30').innerText = "R$ " + meta30Val.toFixed(2).replace('.', ',');
     document.getElementById('detalhes30').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+
+    document.getElementById('val40').innerText = "R$ " + meta40Val.toFixed(2).replace('.', ',');
+    document.getElementById('detalhes40').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
 
     document.getElementById('val50').innerText = "R$ " + meta50Val.toFixed(2).replace('.', ',');
     document.getElementById('detalhes50').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
@@ -622,20 +632,21 @@ function fecharModalShopee() {
 
 window.onclick = function(event) {
     const modal = document.getElementById('shopeeModal');
+
     if (event.target == modal) {
         modal.style.display = 'none';
     }
-}
+};
 
 window.onload = calcular;
 </script>
 
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log('Service Worker registrado com sucesso!'))
-      .catch((err) => console.log('Erro ao registrar Service Worker:', err));
-  }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(() => console.log('Service Worker registrado com sucesso!'))
+            .catch((err) => console.log('Erro ao registrar Service Worker:', err));
+    }
 </script>
 
 </body>
