@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -329,6 +330,10 @@
                     <label for="cfgEmbalagem">Embalagem (R$)</label>
                     <input type="number" id="cfgEmbalagem" value="0.50" step="0.01" min="0" oninput="calcular()">
                 </div>
+                <div class="form-group">
+                    <label for="cfgExtras">Custos extras (%) — após todos os custos</label>
+                    <input type="number" id="cfgExtras" value="5" step="0.1" min="0" oninput="calcular()">
+                </div>
             </div>
 
             <div class="results-header" style="margin-top: 10px;">Parâmetros de Venda na Shopee</div>
@@ -571,13 +576,15 @@ function calcular() {
     const desgastePorHora = parseFloat(document.getElementById('cfgDesgaste').value) || 0.86;
     const percPerda = (parseFloat(document.getElementById('cfgPerda').value) || 5) / 100;
     const custoEmbalagem = parseFloat(document.getElementById('cfgEmbalagem').value) || 0.50;
+    const percExtras = Math.max(0, parseFloat(document.getElementById('cfgExtras').value) || 0) / 100;
 
     const custoFilamentoPuro = (precoFilamentoKg / 1000) * pesoGramas;
     const custoEnergia = tempoHoras * custoEnergiaHora;
     const custoDesgaste = tempoHoras * desgastePorHora;
 
     const somaParcial = custoFilamentoPuro + custoEnergia + custoDesgaste + custoEmbalagem;
-    const custoProducaoBase = somaParcial * (1 + percPerda);
+    const totalComPerda = somaParcial * (1 + percPerda);
+    const custoProducaoBase = totalComPerda * (1 + percExtras);
 
     meta30Val = custoProducaoBase * 1.30;
     meta40Val = custoProducaoBase * 1.40;
@@ -592,62 +599,4 @@ function calcular() {
     document.getElementById('val40').innerText = "R$ " + meta40Val.toFixed(2).replace('.', ',');
     document.getElementById('detalhes40').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
 
-    document.getElementById('val50').innerText = "R$ " + meta50Val.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes50').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val70').innerText = "R$ " + meta70Val.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes70').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val2x').innerText = "R$ " + meta2xVal.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes2x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val23x').innerText = "R$ " + meta23xVal.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes23x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-}
-
-function abrirModalShopee(tituloCenario, valorAlvo) {
-    const taxaFreteExtraPercent = parseFloat(document.getElementById('freteGratis').value) || 0;
-    const usaCpf = document.getElementById('tipoConta').checked;
-    const taxaCpf = usaCpf ? 3.00 : 0.00;
-
-    const precoAnuncioShopee = calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxaCpf);
-    const regras = calcularComissaoFixa(precoAnuncioShopee);
-
-    const valorComissao = precoAnuncioShopee * regras.comissaoPorcentagem;
-    const valorFreteExtra = precoAnuncioShopee * taxaFreteExtraPercent;
-    const totalTaxasFixas = regras.taxaFixa + taxaCpf + valorFreteExtra;
-
-    document.getElementById('modalTitulo').innerText = "Shopee: " + tituloCenario;
-    document.getElementById('modalPrecoFinal').innerText = "R$ " + precoAnuncioShopee.toFixed(2).replace('.', ',');
-    document.getElementById('modalFaixa').innerText = regras.faixaNome;
-    document.getElementById('modalComissao').innerText = "R$ " + valorComissao.toFixed(2).replace('.', ',') + ` (${(regras.comissaoPorcentagem*100).toFixed(0)}%)`;
-    document.getElementById('modalTaxas').innerText = "R$ " + totalTaxasFixas.toFixed(2).replace('.', ',');
-
-    document.getElementById('shopeeModal').style.display = 'flex';
-}
-
-function fecharModalShopee() {
-    document.getElementById('shopeeModal').style.display = 'none';
-}
-
-window.onclick = function(event) {
-    const modal = document.getElementById('shopeeModal');
-
-    if (event.target == modal) {
-        modal.style.display = 'none';
-    }
-};
-
-window.onload = calcular;
-</script>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(() => console.log('Service Worker registrado com sucesso!'))
-            .catch((err) => console.log('Erro ao registrar Service Worker:', err));
-    }
-</script>
-
-</body>
-</html>
+    document.getElementById('val50').innerText = "R$ " + meta50Val.toFixed(2).replace('
