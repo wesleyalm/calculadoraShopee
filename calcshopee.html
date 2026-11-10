@@ -576,7 +576,11 @@ function calcular() {
     const desgastePorHora = parseFloat(document.getElementById('cfgDesgaste').value) || 0.86;
     const percPerda = (parseFloat(document.getElementById('cfgPerda').value) || 5) / 100;
     const custoEmbalagem = parseFloat(document.getElementById('cfgEmbalagem').value) || 0.50;
-    const percExtras = Math.max(0, parseFloat(document.getElementById('cfgExtras').value) || 0) / 100;
+
+    const campoExtras = document.getElementById('cfgExtras');
+    const percExtras = campoExtras
+        ? Math.max(0, parseFloat(campoExtras.value) || 0) / 100
+        : 0.05;
 
     const custoFilamentoPuro = (precoFilamentoKg / 1000) * pesoGramas;
     const custoEnergia = tempoHoras * custoEnergiaHora;
@@ -599,4 +603,4 @@ function calcular() {
     document.getElementById('val40').innerText = "R$ " + meta40Val.toFixed(2).replace('.', ',');
     document.getElementById('detalhes40').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
 
-    document.getElementById('val50').innerText = "R$ " + meta50Val.toFixed(2).replace('
+    document
