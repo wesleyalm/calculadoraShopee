@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080b10">
   <link rel="manifest" href="manifest.json">
-  <title>MWfix | Calculadora 3D & Shopee</title>
+  <title>MWfix | Calculadora 3D & Shopee · V3</title>
   <style>
     :root{color-scheme:dark;--bg:#080b10;--card:#111824;--inner:#0c121b;--stroke:#273447;--text:#eaf2ff;--muted:#91a2b8;--cyan:#40d9ee;--orange:#ff714d;--green:#64edb0;--radius:16px}
     *{box-sizing:border-box}
@@ -50,13 +50,20 @@
     .modal.visible{display:flex}.dialog{width:min(480px,100%);background:#141e2b;border:1px solid #3d5067;border-radius:17px;padding:23px;max-height:90vh;overflow:auto}
     .dialog-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.dialog h2{margin:0;font-size:1.2rem}.dialog .close{width:35px;height:35px;border:0;border-radius:8px;background:#28384c;color:#fff;cursor:pointer;font-size:1.5rem}
     .warn{color:#ffc48f}
+    .section-title{margin:32px 0 15px;font-size:1.35rem;display:flex;align-items:center;gap:11px}
+    .section-note{color:var(--muted);font-size:.88rem;margin:0 0 16px}
+    .units-layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(280px,1fr) minmax(260px,.86fr);gap:18px;align-items:start}
+    .unit-data{grid-column:1}.unit-prices{grid-column:2}
+    .unit-callout{grid-column:3;background:var(--inner);border:1px solid var(--stroke);border-radius:13px;padding:20px}
+    @media(max-width:1050px){.units-layout{grid-template-columns:1fr 1fr}.unit-data{grid-column:1}.unit-prices{grid-column:2}.unit-callout{grid-column:1/-1}}
+    @media(max-width:680px){.units-layout{grid-template-columns:1fr}.unit-data,.unit-prices,.unit-callout{grid-column:1}}
     @media(max-width:1050px){.layout{grid-template-columns:1fr 1fr}.calculator-card{grid-column:1/-1;max-width:430px;width:100%;justify-self:center}}
     @media(max-width:680px){body{padding:16px 12px}.layout{grid-template-columns:1fr}.calculator-card{grid-column:auto;max-width:none}.card{padding:19px}}
   </style>
 </head>
 <body>
 <div class="wrap">
-  <header><div class="eyebrow">MWfix · 3D printing tools</div><h1>Calculadora 3D & Shopee</h1><p>Custos de produção, precificação e operações em um só lugar</p></header>
+  <header><div class="eyebrow">MWfix · 3D printing tools</div><h1>Calculadora 3D & Shopee</h1><p>Custos de produção, precificação e operações em um só lugar · V3</p></header>
   <main class="layout">
     <section class="card" aria-label="Custos de produção">
       <div class="heading"><span class="dot"></span> Dados da impressão</div>
@@ -108,6 +115,40 @@
       <p class="note">Sempre à vista. Aceita teclado numérico, Enter e Backspace quando nenhum campo de texto estiver selecionado.</p>
     </aside>
   </main>
+  <h2 class="section-title"><span class="dot"></span> Peças vendidas separadamente</h2>
+  <p class="section-note">Informe o total da bandeja e a quantidade de unidades. O custo é dividido pelas peças, e cada venda recebe suas próprias taxas Shopee.</p>
+  <div class="units-layout">
+    <section class="card unit-data" aria-label="Cálculo por unidade">
+      <div class="heading"><span class="dot"></span> Impressão de várias peças</div>
+      <div class="field"><label for="pesoLote">Peso TOTAL das peças (gramas)</label><input id="pesoLote" type="number" min="0" step="0.1" value="100"></div>
+      <div class="field"><label for="tempoLote">Tempo TOTAL da impressão</label><input id="tempoLote" type="text" value="4:30" placeholder="Ex.: 4:30"></div>
+      <div class="field"><label for="quantidadeLote">Quantidade de peças (vendidas individualmente)</label><input id="quantidadeLote" type="number" min="1" step="1" value="10"></div>
+      <div class="price-panel" aria-live="polite"><div class="small">Custo por unidade (inclui embalagem individual)</div><div class="big" id="custoUnitario">R$ 0,00</div><div class="row"><span>Custo total do lote</span><strong id="custoLote">R$ 0,00</strong></div><div class="small" id="infoLote">10 peças · embalagem de R$ 0,50 por peça</div></div>
+      <div style="margin-top:20px" class="heading"><span class="dot"></span> Taxas Shopee por venda</div>
+      <div class="field"><label for="freteLote">Programa de frete grátis extra</label><select id="freteLote"><option value="0.06">Sim (+6% por item)</option><option value="0" selected>Não</option></select></div>
+      <div class="check"><input id="cpfLote" type="checkbox"><label for="cpfLote">Conta CPF (+ R$ 3,00 por item)</label></div>
+      <p class="note">Os valores de filamento, energia, desgaste, perdas, extras e embalagem são os mesmos das Configurações de custos acima. A embalagem é cobrada para cada peça, não apenas uma vez pelo lote.</p>
+    </section>
+    <section class="card unit-prices" aria-label="Margem de lucro por peça">
+      <div class="heading"><span class="dot"></span> Preço por peça</div>
+      <div class="subcard">
+        <h2>Margem sobre o custo unitário</h2>
+        <div class="field"><label for="metaLote">Escolher margem / multiplicador</label><select id="metaLote"><option value="1.30">Lucro de 30%</option><option value="1.40">Lucro de 40%</option><option value="1.50" selected>Lucro de 50%</option><option value="1.70">Lucro de 70%</option><option value="2">Multiplicador 2×</option><option value="2.30">Multiplicador 2,3×</option></select></div>
+        <div class="small">Meta de recebimento por peça (antes das taxas Shopee)</div><div class="money" id="alvoLote">R$ 0,00</div>
+        <button type="button" class="primary" id="btnLotePercentual" onclick="abrirDetalhes('lotePercentual')">Ver preço para anunciar CADA peça</button>
+        <div class="row"><span>Preço do anúncio por peça</span><strong id="precoLotePercentual">R$ 0,00</strong></div>
+        <p class="note">Exemplo: custo unitário R$ 1 e multiplicador 2× = meta de R$ 2 por peça. O anúncio Shopee fica maior para cobrir as taxas.</p>
+      </div>
+      <button class="fold" type="button" aria-expanded="false" aria-controls="shopeeLoteFixo" onclick="alternar('shopeeLoteFixo',this)">🛒 Shopee · Lucro fixo por peça <span class="chev">▼</span></button>
+      <div class="fold-body" id="shopeeLoteFixo">
+        <div class="field"><label for="lucroLoteFixo">Lucro líquido desejado em CADA venda</label><select id="lucroLoteFixo"><option value="2">R$ 2,00</option><option value="5" selected>R$ 5,00</option><option value="10">R$ 10,00</option><option value="15">R$ 15,00</option></select></div>
+        <div class="small">Preço para anunciar cada unidade</div><div class="money orange" id="precoLoteFixo">R$ 0,00</div>
+        <div class="row"><span>Lucro real por unidade</span><strong id="lucroLoteReal">R$ 0,00</strong></div>
+        <button type="button" class="primary" id="btnLoteFixo" onclick="abrirDetalhes('loteFixo')">Ver taxas da venda individual</button>
+      </div>
+    </section>
+    <aside class="unit-callout"><div class="heading"><span class="dot"></span> Resumo das unidades</div><div class="row"><span>Quantidade</span><strong id="resumoQuantidade">10</strong></div><div class="row"><span>Custo de uma peça</span><strong id="resumoCustoUnitario">R$ 0,00</strong></div><div class="row"><span>Valor-alvo por peça</span><strong id="resumoAlvoUnitario">R$ 0,00</strong></div><div class="row"><span>Anúncio Shopee por peça</span><strong id="resumoPrecoUnitario">R$ 0,00</strong></div><div class="row"><span>Receita bruta por 10 vendas</span><strong id="resumoReceitaLote">R$ 0,00</strong></div><div class="row"><span>Lucro total previsto (10 vendas)</span><strong id="resumoLucroLote">R$ 0,00</strong></div><p class="note">Projeção: considera cada peça vendida em um pedido separado, sob as mesmas condições de taxas. Quando várias peças entram no mesmo pedido, o cálculo de taxas pode ser diferente.</p></aside>
+  </div>
   <footer>MWfix · Ferramenta de precificação para impressão 3D</footer>
 </div>
 <div class="modal" id="shopeeModal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" onclick="if(event.target===this)fecharModal()">
@@ -131,6 +172,7 @@ const moeda = n => Number.isFinite(n) ? n.toLocaleString('pt-BR',{style:'currenc
 let custoBase = 0;
 let ultimoPercentual = null;
 let ultimoFixo = null;
+let ultimoLotePercentual = null, ultimoLoteFixo = null, custoUnitario = 0, qtdLote = 10;
 
 function alternar(id,botao){
   const el=$(id);const aberto=el.classList.toggle('open');botao.setAttribute('aria-expanded',String(aberto));
@@ -153,15 +195,14 @@ const FAIXAS=[
   {min:20000,max:49999,comissao:.14,fixa:26,nome:'R$ 200 a R$ 499,99 (14% + R$ 26)'},
   {min:50000,max:Infinity,comissao:.14,fixa:26,nome:'A partir de R$ 500 (14% + R$ 26)'}
 ];
-function detalhesPreco(centavos,taxaFrete,taxaCPF){
+function detalhesPreco(centavos,taxaFrete,taxaCPF,custo=custoBase){
   const f=FAIXAS.find(x=>centavos>=x.min&&centavos<=x.max);
   if(!f)return null;
   const preco=centavos/100,comissao=preco*f.comissao,frete=preco*taxaFrete;
   const liquido=preco-comissao-frete-f.fixa-taxaCPF;
-  return {preco,faixa:f,comissao,frete,cpf:taxaCPF,liquido,lucro:liquido-custoBase};
+  return {preco,faixa:f,comissao,frete,cpf:taxaCPF,liquido,lucro:liquido-custo};
 }
-function precoShopeeParaMeta(alvo){
-  const frete=numero('freteGratis'),cpf=$('tipoConta').checked?3:0;
+function precoShopeeParaMeta(alvo, frete=numero('freteGratis'),cpf=$('tipoConta').checked?3:0,custo=custoBase){
   let menor=null;
   for(const faixa of FAIXAS){
     const fator=1-faixa.comissao-frete;if(fator<=0)continue;
@@ -169,7 +210,7 @@ function precoShopeeParaMeta(alvo){
     // Preço inteiro em centavos; margem numérica protege contra erro de ponto flutuante.
     let centavos=Math.max(faixa.min,Math.ceil(ideal*100-1e-8));
     while(centavos<=faixa.max){
-      const d=detalhesPreco(centavos,frete,cpf);
+      const d=detalhesPreco(centavos,frete,cpf,custo);
       if(d&&d.liquido+1e-8>=alvo){if(!menor||centavos<Math.round(menor.preco*100))menor=d;break;}
       centavos++;
     }
@@ -193,25 +234,59 @@ function calcular(){
   ultimoFixo=precoShopeeParaMeta(alvoFixo);
   $('precoFixo').textContent=ultimoFixo?moeda(ultimoFixo.preco):'Indisponível';
   $('lucroReal').textContent=ultimoFixo?moeda(ultimoFixo.lucro):'—';
+  calcularLote();
+}
+function calcularLote(){
+  qtdLote=Math.max(1,Math.floor(numero('quantidadeLote')||1));
+  const peso=numero('pesoLote'),tempo=parseTempoEmHoras($('tempoLote').value);
+  // As peças compartilham o custo de material e tempo da bandeja.
+  // Cada peça, vendida individualmente, precisa de sua própria embalagem.
+  const material=peso*numero('cfgFilamento')/1000;
+  const energia=tempo*numero('cfgEnergia');
+  const desgaste=tempo*numero('cfgDesgaste');
+  const subtotal=material+energia+desgaste+qtdLote*numero('cfgEmbalagem');
+  const total=subtotal*(1+numero('cfgPerda')/100)*(1+numero('cfgExtras')/100);
+  custoUnitario=total/qtdLote;
+  const alvo=custoUnitario*numero('metaLote');
+  const frete=numero('freteLote'),cpf=$('cpfLote').checked?3:0;
+  ultimoLotePercentual=precoShopeeParaMeta(alvo,frete,cpf,custoUnitario);
+  ultimoLoteFixo=precoShopeeParaMeta(custoUnitario+numero('lucroLoteFixo'),frete,cpf,custoUnitario);
+  $('custoUnitario').textContent=moeda(custoUnitario);
+  $('custoLote').textContent=moeda(total);
+  $('infoLote').textContent=qtdLote+' peças · '+moeda(numero('cfgEmbalagem'))+' de embalagem por peça';
+  $('alvoLote').textContent=moeda(alvo);
+  $('precoLotePercentual').textContent=ultimoLotePercentual?moeda(ultimoLotePercentual.preco):'Indisponível';
+  $('precoLoteFixo').textContent=ultimoLoteFixo?moeda(ultimoLoteFixo.preco):'Indisponível';
+  $('lucroLoteReal').textContent=ultimoLoteFixo?moeda(ultimoLoteFixo.lucro):'—';
+  $('btnLotePercentual').disabled=!ultimoLotePercentual;
+  $('btnLoteFixo').disabled=!ultimoLoteFixo;
+  $('resumoQuantidade').textContent=String(qtdLote);
+  $('resumoCustoUnitario').textContent=moeda(custoUnitario);
+  $('resumoAlvoUnitario').textContent=moeda(alvo);
+  $('resumoPrecoUnitario').textContent=ultimoLotePercentual?moeda(ultimoLotePercentual.preco):'—';
+  $('resumoReceitaLote').textContent=ultimoLotePercentual?moeda(ultimoLotePercentual.preco*qtdLote):'—';
+  $('resumoLucroLote').textContent=ultimoLotePercentual?moeda(ultimoLotePercentual.lucro*qtdLote):'—';
 }
 function abrirDetalhes(modo){
-  const dados=modo==='fixo'?ultimoFixo:ultimoPercentual;
+  const eLote=modo==='lotePercentual'||modo==='loteFixo';
+  const fixo=modo==='fixo'||modo==='loteFixo';
+  const dados=modo==='loteFixo'?ultimoLoteFixo:modo==='lotePercentual'?ultimoLotePercentual:modo==='fixo'?ultimoFixo:ultimoPercentual;
   if(!dados)return;
-  $('modalTitulo').textContent=modo==='fixo'?'Shopee · Lucro fixo':'Shopee · Margem percentual';
+  $('modalTitulo').textContent=(eLote?'Shopee · Venda por peça':'Shopee · Lote vendido junto')+(fixo?' · Lucro fixo':' · Margem percentual');
   $('modalPreco').textContent=moeda(dados.preco);
   $('modalFaixa').textContent=dados.faixa.nome;
-  $('modalCusto').textContent=moeda(custoBase);
+  $('modalCusto').textContent=moeda(eLote?custoUnitario:custoBase)+(eLote?' por peça':' pelo lote');
   $('modalComissao').textContent=moeda(dados.comissao)+' ('+(dados.faixa.comissao*100).toFixed(0)+'%)';
-  $('modalTaxaFixa').textContent=moeda(dados.faixa.fixa);
+  $('modalTaxaFixa').textContent=moeda(dados.faixa.fixa)+(eLote?' por venda':'');
   $('modalFrete').textContent=moeda(dados.frete);
-  $('modalCpf').textContent=moeda(dados.cpf);
+  $('modalCpf').textContent=moeda(dados.cpf)+(eLote?' por venda':'');
   $('modalLiquido').textContent=moeda(dados.liquido);
   $('modalLucro').textContent=moeda(dados.lucro);
   $('shopeeModal').classList.add('visible');
 }
 function fecharModal(){$('shopeeModal').classList.remove('visible');}
-document.addEventListener('input',e=>{if(e.target.matches('#pesoFilamento,#tempoProducao,#cfgFilamento,#cfgEnergia,#cfgDesgaste,#cfgPerda,#cfgEmbalagem,#cfgExtras'))calcular();});
-document.addEventListener('change',e=>{if(e.target.matches('#metaPercentual,#lucroFixo,#freteGratis,#tipoConta'))calcular();});
+document.addEventListener('input',e=>{if(e.target.matches('#pesoFilamento,#tempoProducao,#cfgFilamento,#cfgEnergia,#cfgDesgaste,#cfgPerda,#cfgEmbalagem,#cfgExtras'))calcular();if(e.target.matches('#pesoLote,#tempoLote,#quantidadeLote'))calcularLote();});
+document.addEventListener('change',e=>{if(e.target.matches('#metaPercentual,#lucroFixo,#freteGratis,#tipoConta'))calcular();if(e.target.matches('#metaLote,#lucroLoteFixo,#freteLote,#cpfLote'))calcularLote();});
 
 // Calculadora lateral: operações comuns, sem eval() nem bibliotecas externas.
 let atual='0',guardado=null,operador=null,novoNumero=false,expressao='';
@@ -245,8 +320,31 @@ document.addEventListener('keydown',e=>{
   const teclas={'/':'÷','*':'×','-':'−','.':',','Backspace':'⌫','Enter':'=','Delete':'C'};
   const t=teclas[e.key]||e.key;if(/^\d$/.test(t)||['+','−','×','÷',',','%','=','⌫','C'].includes(t)){e.preventDefault();calcPress(t);}
 });
-calcular();exibirCalc();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+// Inicializa após o HTML estar disponível, inclusive na visualização local.
+function iniciarCalculadora(){
+  try { calcular(); exibirCalc(); }
+  catch (erro) {
+    console.error('Falha ao iniciar MWfix:', erro);
+    const custo = $('custoTotal');
+    if (custo) custo.textContent = 'Erro ao calcular';
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', iniciarCalculadora, {once:true});
+} else {
+  iniciarCalculadora();
+}
+window.addEventListener('pageshow', iniciarCalculadora);
+// Não registrar service worker aqui: versões antigas podem devolver HTML em cache.
+// A página funciona normalmente sem conexão ou arquivos externos quando aberta como HTML.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registros => {
+    registros.forEach(registro => {
+      const url = registro.active && registro.active.scriptURL || '';
+      if (url.endsWith('/sw.js')) registro.unregister();
+    });
+  }).catch(() => {});
+}
 </script>
 </body>
 </html>
