@@ -1,664 +1,252 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MWfix - Calculadora 3D & Shopee</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ee4d2d">
-    <style>
-        :root {
-            --primary: #ee4d2d;
-            --primary-dark: #d73211;
-            --bg-color: #f5f5f7;
-            --card-bg: #ffffff;
-            --text-main: #222222;
-            --text-secondary: #555555;
-            --border-color: #e0e0e0;
-            --success: #26aa99;
-            --radius: 12px;
-            --shadow: 0 4px 20px rgba(0,0,0,0.06);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 950px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        header h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-        }
-
-        header p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.15);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .checkbox-group input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            margin-bottom: 0;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .results-header {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-main);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .tier-box {
-            background: #fff5f2;
-            border: 1px dashed rgba(238, 77, 45, 0.4);
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-bottom: 14px;
-        }
-
-        .tier-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .tier-title {
-            font-weight: 700;
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-
-        .tier-price {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .tier-details {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .btn-shopee {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        .btn-shopee:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .accordion-btn {
-            background: #f0f0f2;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 10px 14px;
-            border-radius: 8px;
-            width: 100%;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .advanced-settings {
-            display: none;
-            background: #fafafa;
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 16px;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
-        .result-label {
-            color: var(--text-secondary);
-        }
-
-        .result-value {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 24px;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            position: relative;
-        }
-
-        .close-btn {
-            color: #aaa;
-            position: absolute;
-            right: 16px;
-            top: 12px;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-btn:hover {
-            color: var(--text-main);
-        }
-
-        .shopee-highlight {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--primary);
-            background: #fff5f2;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            margin: 14px 0;
-            border: 1px dashed rgba(238, 77, 45, 0.4);
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b10">
+  <link rel="manifest" href="manifest.json">
+  <title>MWfix | Calculadora 3D & Shopee</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080b10;--card:#111824;--inner:#0c121b;--stroke:#273447;--text:#eaf2ff;--muted:#91a2b8;--cyan:#40d9ee;--orange:#ff714d;--green:#64edb0;--radius:16px}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(ellipse at 50% -10%,#15253a 0%,transparent 52%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;min-height:100vh;padding:26px 16px}
+    .wrap{max-width:1440px;margin:auto}
+    header{text-align:center;margin-bottom:27px}
+    .eyebrow{letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);font-size:.7rem;font-weight:800}
+    h1{margin:5px 0;font-size:clamp(1.55rem,3vw,2.4rem);letter-spacing:-.04em}
+    header p{color:var(--muted);font-size:.88rem;margin:0}
+    .layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,1fr) minmax(260px,.86fr);gap:18px;align-items:start}
+    .card{background:linear-gradient(160deg,#151e2c,#101620);border:1px solid var(--stroke);border-radius:var(--radius);padding:22px;box-shadow:0 14px 35px #0003;min-width:0}
+    .heading{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--stroke);margin-bottom:20px;font-weight:750;font-size:1.05rem}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 13px var(--cyan)}
+    label{display:block;margin-bottom:7px;font-size:.84rem;font-weight:650;color:#c9d6e7}
+    .field{margin-bottom:17px}
+    input,select{background:#0b111a;border:1px solid #314056;border-radius:10px;color:var(--text);width:100%;padding:12px 13px;font:inherit;font-size:.95rem;outline:0}
+    input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #40d9ee20}
+    input[type=checkbox]{width:18px;height:18px;accent-color:var(--cyan);flex-shrink:0}
+    .check{display:flex;align-items:center;gap:10px;margin:16px 0}.check label{margin:0;font-weight:500}
+    .fold{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;background:#182538;border:1px solid #32465f;border-radius:10px;color:#eaf2ff;font-size:.91rem;font-weight:730;padding:13px 14px;cursor:pointer}
+    .fold:hover{border-color:var(--cyan)}.chev{transition:transform .2s}.fold[aria-expanded=true] .chev{transform:rotate(180deg)}
+    .fold-body{display:none;margin-top:12px;padding:15px 14px 2px;background:var(--inner);border:1px solid var(--stroke);border-radius:12px}.fold-body.open{display:block}
+    .price-panel{background:linear-gradient(130deg,#122936,#10202c);border:1px solid #265968;border-radius:13px;padding:17px;margin-top:20px}
+    .small{color:var(--muted);font-size:.81rem}.big{font-size:clamp(1.7rem,3vw,2.4rem);font-weight:820;letter-spacing:-.05em;color:var(--cyan);margin:3px 0}
+    .accent{color:var(--orange)}.subcard{padding:18px;border:1px solid var(--stroke);background:var(--inner);border-radius:13px;margin-bottom:17px}
+    .subcard h2{font-size:1rem;margin:0 0 16px}.money{font-size:2rem;font-weight:820;letter-spacing:-.04em;margin:8px 0;color:var(--green)}
+    .money.orange{color:var(--orange)}
+    .primary{background:var(--orange);color:#170b08;border:0;border-radius:10px;cursor:pointer;padding:12px 15px;font-weight:800;width:100%;font-size:.91rem}
+    .primary:hover{filter:brightness(1.12)}.primary:disabled{opacity:.4;cursor:not-allowed}
+    .secondary{background:#223144;color:var(--text);border:1px solid #3c5069;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:700}
+    .note{font-size:.77rem;color:var(--muted);line-height:1.5;margin-top:10px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;font-size:.83rem}
+    .row span:first-child{color:var(--muted)}.row strong{text-align:right}
+    .calc-display{background:#070c13;border:1px solid #334257;border-radius:12px;padding:20px 13px;text-align:right;min-height:86px;margin-bottom:13px;overflow-wrap:anywhere}
+    #calcExpression{color:var(--muted);font-size:.78rem;min-height:18px}#calcScreen{font-size:2rem;font-weight:800;margin-top:3px}
+    .keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+    .key{min-height:55px;border:1px solid #344359;border-radius:10px;background:#202c3d;color:#f2f7ff;font-weight:700;font-size:1.1rem;cursor:pointer}
+    .key:hover{background:#304159}.key.op{background:#253b4a;color:var(--cyan)}.key.equal{background:var(--cyan);color:#061016;border-color:var(--cyan)}.key.clear{color:var(--orange)}
+    .key.zero{grid-column:span 2}
+    footer{text-align:center;font-size:.77rem;color:var(--muted);margin:24px 0}
+    .modal{display:none;position:fixed;inset:0;background:#000b;z-index:10;align-items:center;justify-content:center;padding:16px}
+    .modal.visible{display:flex}.dialog{width:min(480px,100%);background:#141e2b;border:1px solid #3d5067;border-radius:17px;padding:23px;max-height:90vh;overflow:auto}
+    .dialog-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.dialog h2{margin:0;font-size:1.2rem}.dialog .close{width:35px;height:35px;border:0;border-radius:8px;background:#28384c;color:#fff;cursor:pointer;font-size:1.5rem}
+    .warn{color:#ffc48f}
+    @media(max-width:1050px){.layout{grid-template-columns:1fr 1fr}.calculator-card{grid-column:1/-1;max-width:430px;width:100%;justify-self:center}}
+    @media(max-width:680px){body{padding:16px 12px}.layout{grid-template-columns:1fr}.calculator-card{grid-column:auto;max-width:none}.card{padding:19px}}
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <header>
-        <h1>MWfix - Calculadora 3D & Shopee</h1>
-        <p>Precificação exata com simulação de cenários e repasse de custos para a Shopee (Atualizado Out/2026).</p>
-    </header>
-
-    <div class="grid-2">
-        <div class="card">
-            <div class="results-header">Dados do Item (Fatiador)</div>
-
-            <div class="form-group">
-                <label for="pesoFilamento">Peso do Item impresso (gramas)</label>
-                <input type="number" id="pesoFilamento" value="50" step="1" min="0" oninput="calcular()" placeholder="Ex: 50">
-            </div>
-
-            <div class="form-group">
-                <label for="tempoProducao">Tempo de Produção (Ex: 1:20 ou 4h30m)</label>
-                <input type="text" id="tempoProducao" value="4:30" oninput="calcular()" placeholder="Ex: 1:20 ou 4h30m">
-            </div>
-
-            <button type="button" class="accordion-btn" onclick="toggleAdvanced()">
-                ⚙️ Configurações de Custos (Sessão Atual) <span id="arrow">▼</span>
-            </button>
-
-            <div id="advancedSettings" class="advanced-settings">
-                <div class="form-group">
-                    <label for="cfgFilamento">Filamento (R$ / kg)</label>
-                    <input type="number" id="cfgFilamento" value="120.00" step="0.01" min="0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label for="cfgEnergia">Energia (R$ / hora)</label>
-                    <input type="number" id="cfgEnergia" value="0.20" step="0.01" min="0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label for="cfgDesgaste">Desgaste da Máquina (R$ / hora)</label>
-                    <input type="number" id="cfgDesgaste" value="0.86" step="0.01" min="0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label for="cfgPerda">Porcentagem de Perda (%)</label>
-                    <input type="number" id="cfgPerda" value="5" step="1" min="0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label for="cfgEmbalagem">Embalagem (R$)</label>
-                    <input type="number" id="cfgEmbalagem" value="0.50" step="0.01" min="0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label for="cfgExtras">Custos extras (%) — após todos os custos</label>
-                    <input type="number" id="cfgExtras" value="5" step="0.1" min="0" oninput="calcular()">
-                </div>
-            </div>
-
-            <div class="results-header" style="margin-top: 10px;">Parâmetros de Venda na Shopee</div>
-
-            <div class="form-group">
-                <label for="freteGratis">Participação em Frete Grátis Extra</label>
-                <select id="freteGratis" onchange="calcular()">
-                    <option value="0.06">Sim (6% adicional)</option>
-                    <option value="0" selected>Não</option>
-                </select>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="tipoConta" onchange="calcular()">
-                <label for="tipoConta">Vender via CPF (Adicionar taxa de R$ 3,00)</label>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="results-header">Cenários de Meta (Valor Líquido Desejado)</div>
-
-            <!-- 30% Lucro -->
-            <div class="tier-box">
-                <div class="tier-header">
-                    <span class="tier-title">Lucro de 30%</span>
-                    <span class="tier-price" id="val30">R$ 0,00</span>
-                </div>
-                <div class="tier-details" id="detalhes30">Custo Base: R$ 0,00</div>
-                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 30%', meta30Val)">Enviar pra Shopee</button>
-            </div>
-
-            <!-- 40% Lucro -->
-            <div class="tier-box">
-                <div class="tier-header">
-                    <span class="tier-title">Lucro de 40%</span>
-                    <span class="tier-price" id="val40">R$ 0,00</span>
-                </div>
-                <div class="tier-details" id="detalhes40">Custo Base: R$ 0,00</div>
-                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 40%', meta40Val)">Enviar pra Shopee</button>
-            </div>
-
-            <!-- 50% Lucro -->
-            <div class="tier-box">
-                <div class="tier-header">
-                    <span class="tier-title">Lucro de 50%</span>
-                    <span class="tier-price" id="val50">R$ 0,00</span>
-                </div>
-                <div class="tier-details" id="detalhes50">Custo Base: R$ 0,00</div>
-                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 50%', meta50Val)">Enviar pra Shopee</button>
-            </div>
-
-            <!-- 70% Lucro -->
-            <div class="tier-box">
-                <div class="tier-header">
-                    <span class="tier-title">Lucro de 70%</span>
-                    <span class="tier-price" id="val70">R$ 0,00</span>
-                </div>
-                <div class="tier-details" id="detalhes70">Custo Base: R$ 0,00</div>
-                <button class="btn-shopee" onclick="abrirModalShopee('Lucro de 70%', meta70Val)">Enviar pra Shopee</button>
-            </div>
-
-            <!-- 2x Custo -->
-            <div class="tier-box">
-                <div class="tier-header">
-                    <span class="tier-title">Multiplicador 2x</span>
-                    <span class="tier-price" id="val2x">R$ 0,00</span>
-                </div>
-                <div class="tier-details" id="detalhes2x">Custo Base: R$ 0,00</div>
-                <button class="btn-shopee" onclick="abrirModalShopee('Multiplicador 2x', meta2xVal)">Enviar pra Shopee</button>
-            </div>
-
-            <!-- 2.3x Custo -->
-            <div class="tier-box">
-                <div class="tier-header">
-                    <span class="tier-title">Multiplicador 2.3x</span>
-                    <span class="tier-price" id="val23x">R$ 0,00</span>
-                </div>
-                <div class="tier-details" id="detalhes23x">Custo Base: R$ 0,00</div>
-                <button class="btn-shopee" onclick="abrirModalShopee('Multiplicador 2.3x', meta23xVal)">Enviar pra Shopee</button>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        MWfix 3D Printing & Solutions - Ferramenta de Precificação para Marketplaces.
-    </footer>
+<div class="wrap">
+  <header><div class="eyebrow">MWfix · 3D printing tools</div><h1>Calculadora 3D & Shopee</h1><p>Custos de produção, precificação e operações em um só lugar</p></header>
+  <main class="layout">
+    <section class="card" aria-label="Custos de produção">
+      <div class="heading"><span class="dot"></span> Dados da impressão</div>
+      <div class="field"><label for="pesoFilamento">Peso impresso (gramas)</label><input type="number" id="pesoFilamento" min="0" step="0.1" value="50"></div>
+      <div class="field"><label for="tempoProducao">Tempo de impressão (ex.: 4:30 ou 4h30m)</label><input type="text" id="tempoProducao" value="4:30" autocomplete="off"></div>
+      <div class="price-panel" aria-live="polite"><div class="small">Custo total de produção</div><div class="big" id="custoTotal">R$ 0,00</div><div class="small">Inclui material, tempo, embalagem, perdas e extras.</div></div>
+      <div style="margin-top:18px"><button class="fold" type="button" aria-expanded="false" aria-controls="advancedSettings" onclick="alternar('advancedSettings',this)">⚙️ Configurações de custos <span class="chev">▼</span></button></div>
+      <div class="fold-body" id="advancedSettings">
+        <div class="field"><label for="cfgFilamento">Filamento (R$ / kg)</label><input type="number" id="cfgFilamento" min="0" step="0.01" value="120"></div>
+        <div class="field"><label for="cfgEnergia">Energia (R$ / hora)</label><input type="number" id="cfgEnergia" min="0" step="0.01" value="0.20"></div>
+        <div class="field"><label for="cfgDesgaste">Desgaste da máquina (R$ / hora)</label><input type="number" id="cfgDesgaste" min="0" step="0.01" value="0.86"></div>
+        <div class="field"><label for="cfgPerda">Perda (%)</label><input type="number" id="cfgPerda" min="0" step="0.1" value="5"></div>
+        <div class="field"><label for="cfgEmbalagem">Embalagem (R$)</label><input type="number" id="cfgEmbalagem" min="0" step="0.01" value="0.50"></div>
+        <div class="field"><label for="cfgExtras">Custos extras (%) após perdas</label><input type="number" id="cfgExtras" min="0" step="0.1" value="5"></div>
+      </div>
+      <div style="margin-top:20px" class="heading"><span class="dot"></span> Taxas Shopee</div>
+      <div class="field"><label for="freteGratis">Programa de frete grátis extra</label><select id="freteGratis"><option value="0.06">Sim (+6%)</option><option value="0" selected>Não</option></select></div>
+      <div class="check"><input id="tipoConta" type="checkbox"><label for="tipoConta">Conta CPF (taxa adicional de R$ 3,00)</label></div>
+      <p class="note">As faixas de comissão e taxas fixas são as mesmas do código fornecido. Confira periodicamente as regras vigentes na sua conta.</p>
+    </section>
+    <section class="card" aria-label="Metas e preços Shopee">
+      <div class="heading"><span class="dot"></span> Metas de venda</div>
+      <div class="subcard">
+        <h2>Margem sobre o custo</h2>
+        <div class="field"><label for="metaPercentual">Escolher margem / multiplicador</label><select id="metaPercentual"><option value="1.30">Lucro de 30%</option><option value="1.40">Lucro de 40%</option><option value="1.50" selected>Lucro de 50%</option><option value="1.70">Lucro de 70%</option><option value="2">Multiplicador 2×</option><option value="2.30">Multiplicador 2,3×</option></select></div>
+        <div class="small">Valor líquido desejado (antes das taxas Shopee)</div><div class="money" id="metaValor">R$ 0,00</div>
+        <button class="primary" type="button" id="btnMeta" onclick="abrirDetalhes('percentual')">Ver preço para anunciar na Shopee</button>
+        <p class="note">Aqui, 50% significa custo × 1,50, como na calculadora original.</p>
+      </div>
+      <button class="fold" type="button" aria-expanded="false" aria-controls="shopeeFixo" onclick="alternar('shopeeFixo',this)">🛒 Shopee · Lucro fixo em reais <span class="chev">▼</span></button>
+      <div class="fold-body" id="shopeeFixo">
+        <div class="field"><label for="lucroFixo">Lucro líquido desejado por item</label><select id="lucroFixo"><option value="2">R$ 2,00</option><option value="5" selected>R$ 5,00</option><option value="10">R$ 10,00</option><option value="15">R$ 15,00</option></select></div>
+        <div class="small">Preço necessário para anunciar</div><div class="money orange" id="precoFixo">R$ 0,00</div>
+        <div class="row"><span>Lucro após custos e taxas</span><strong id="lucroReal">R$ 0,00</strong></div>
+        <button type="button" class="primary" onclick="abrirDetalhes('fixo')">Ver taxas e composição do preço</button>
+        <p class="note">O preço é calculado de trás para frente para sobrar o lucro selecionado após o custo de produção, a comissão, o frete extra e as taxas fixas.</p>
+      </div>
+    </section>
+    <aside class="card calculator-card" aria-label="Calculadora comum">
+      <div class="heading"><span class="dot"></span> Calculadora</div>
+      <div class="calc-display" aria-live="polite"><div id="calcExpression">&nbsp;</div><div id="calcScreen">0</div></div>
+      <div class="keys">
+        <button type="button" class="key clear" onclick="calcPress('C')">C</button><button type="button" class="key" onclick="calcPress('⌫')">⌫</button><button type="button" class="key op" onclick="calcPress('%')">%</button><button type="button" class="key op" onclick="calcPress('÷')">÷</button>
+        <button type="button" class="key" onclick="calcPress('7')">7</button><button type="button" class="key" onclick="calcPress('8')">8</button><button type="button" class="key" onclick="calcPress('9')">9</button><button type="button" class="key op" onclick="calcPress('×')">×</button>
+        <button type="button" class="key" onclick="calcPress('4')">4</button><button type="button" class="key" onclick="calcPress('5')">5</button><button type="button" class="key" onclick="calcPress('6')">6</button><button type="button" class="key op" onclick="calcPress('−')">−</button>
+        <button type="button" class="key" onclick="calcPress('1')">1</button><button type="button" class="key" onclick="calcPress('2')">2</button><button type="button" class="key" onclick="calcPress('3')">3</button><button type="button" class="key op" onclick="calcPress('+')">+</button>
+        <button type="button" class="key zero" onclick="calcPress('0')">0</button><button type="button" class="key" onclick="calcPress(',')">,</button><button type="button" class="key equal" onclick="calcPress('=')">=</button>
+      </div>
+      <p class="note">Sempre à vista. Aceita teclado numérico, Enter e Backspace quando nenhum campo de texto estiver selecionado.</p>
+    </aside>
+  </main>
+  <footer>MWfix · Ferramenta de precificação para impressão 3D</footer>
 </div>
-
-<div id="shopeeModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="fecharModalShopee()">&times;</span>
-        <div class="results-header" id="modalTitulo">Anúncio na Shopee</div>
-        <p style="font-size: 0.9rem; color: var(--text-secondary);">Para receber o valor líquido desejado nesta modalidade, o preço de anúncio exato na Shopee deve ser:</p>
-
-        <div class="shopee-highlight" id="modalPrecoFinal">R$ 0,00</div>
-
-        <div class="result-row">
-            <span class="result-label">Faixa Shopee Aplicada:</span>
-            <span class="result-value" id="modalFaixa">-</span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Comissão da Plataforma:</span>
-            <span class="result-value" id="modalComissao">-</span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Taxa Fixa + Outras:</span>
-            <span class="result-value" id="modalTaxas">-</span>
-        </div>
-    </div>
+<div class="modal" id="shopeeModal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" onclick="if(event.target===this)fecharModal()">
+  <div class="dialog"><div class="dialog-top"><h2 id="modalTitulo">Detalhes Shopee</h2><button class="close" type="button" aria-label="Fechar" onclick="fecharModal()">×</button></div>
+    <div class="price-panel"><div class="small">Preço de anúncio</div><div class="big" id="modalPreco">R$ 0,00</div></div>
+    <div class="row"><span>Faixa de comissão</span><strong id="modalFaixa">—</strong></div>
+    <div class="row"><span>Custo de produção</span><strong id="modalCusto">—</strong></div>
+    <div class="row"><span>Comissão percentual</span><strong id="modalComissao">—</strong></div>
+    <div class="row"><span>Taxa fixa Shopee</span><strong id="modalTaxaFixa">—</strong></div>
+    <div class="row"><span>Frete grátis extra</span><strong id="modalFrete">—</strong></div>
+    <div class="row"><span>Adicional CPF</span><strong id="modalCpf">—</strong></div>
+    <div class="row"><span>Líquido após taxas</span><strong id="modalLiquido">—</strong></div>
+    <div class="row"><span>Lucro final após custo</span><strong id="modalLucro">—</strong></div>
+    <p class="note">O cálculo busca o menor preço em centavos que atenda à meta nas faixas do código original. Não inclui tributos de CNPJ não configurados.</p>
+  </div>
 </div>
-
 <script>
-let meta30Val = 0;
-let meta40Val = 0;
-let meta50Val = 0;
-let meta70Val = 0;
-let meta2xVal = 0;
-let meta23xVal = 0;
+'use strict';
+const $ = id => document.getElementById(id);
+const moeda = n => Number.isFinite(n) ? n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : 'Indisponível';
+let custoBase = 0;
+let ultimoPercentual = null;
+let ultimoFixo = null;
 
-function toggleAdvanced() {
-    const section = document.getElementById('advancedSettings');
-    const arrow = document.getElementById('arrow');
-
-    if (section.style.display === 'block') {
-        section.style.display = 'none';
-        arrow.innerText = '▼';
-    } else {
-        section.style.display = 'block';
-        arrow.innerText = '▲';
+function alternar(id,botao){
+  const el=$(id);const aberto=el.classList.toggle('open');botao.setAttribute('aria-expanded',String(aberto));
+}
+function numero(id){const v=parseFloat($(id).value);return Number.isFinite(v)?Math.max(0,v):0;}
+function parseTempoEmHoras(texto){
+  const t=String(texto||'').trim().toLowerCase().replace(',','.');if(!t)return 0;
+  if(/^\d+(?:\.\d+)?:\d+(?:\.\d+)?$/.test(t)){
+    const [h,m]=t.split(':').map(Number);return h+m/60;
+  }
+  const partes=t.match(/^(?:(\d+(?:\.\d+)?)\s*h)?\s*(?:(\d+(?:\.\d+)?)\s*m)?$/);
+  if(partes&&(partes[1]||partes[2]))return Number(partes[1]||0)+Number(partes[2]||0)/60;
+  const simples=Number(t);return Number.isFinite(simples)&&simples>=0?simples:0;
+}
+// Mantidas exatamente as cinco faixas de comissão e suas taxas fixas do arquivo original.
+const FAIXAS=[
+  {min:0,max:7999,comissao:.20,fixa:4.50,nome:'Até R$ 79,99 (20% + R$ 4,50)'},
+  {min:8000,max:9999,comissao:.14,fixa:16,nome:'R$ 80 a R$ 99,99 (14% + R$ 16)'},
+  {min:10000,max:19999,comissao:.14,fixa:20,nome:'R$ 100 a R$ 199,99 (14% + R$ 20)'},
+  {min:20000,max:49999,comissao:.14,fixa:26,nome:'R$ 200 a R$ 499,99 (14% + R$ 26)'},
+  {min:50000,max:Infinity,comissao:.14,fixa:26,nome:'A partir de R$ 500 (14% + R$ 26)'}
+];
+function detalhesPreco(centavos,taxaFrete,taxaCPF){
+  const f=FAIXAS.find(x=>centavos>=x.min&&centavos<=x.max);
+  if(!f)return null;
+  const preco=centavos/100,comissao=preco*f.comissao,frete=preco*taxaFrete;
+  const liquido=preco-comissao-frete-f.fixa-taxaCPF;
+  return {preco,faixa:f,comissao,frete,cpf:taxaCPF,liquido,lucro:liquido-custoBase};
+}
+function precoShopeeParaMeta(alvo){
+  const frete=numero('freteGratis'),cpf=$('tipoConta').checked?3:0;
+  let menor=null;
+  for(const faixa of FAIXAS){
+    const fator=1-faixa.comissao-frete;if(fator<=0)continue;
+    const ideal=(alvo+faixa.fixa+cpf)/fator;
+    // Preço inteiro em centavos; margem numérica protege contra erro de ponto flutuante.
+    let centavos=Math.max(faixa.min,Math.ceil(ideal*100-1e-8));
+    while(centavos<=faixa.max){
+      const d=detalhesPreco(centavos,frete,cpf);
+      if(d&&d.liquido+1e-8>=alvo){if(!menor||centavos<Math.round(menor.preco*100))menor=d;break;}
+      centavos++;
     }
+  }
+  return menor;
 }
-
-function parseTempoEmHoras(inputStr) {
-    if (!inputStr) return 0;
-    let str = String(inputStr).trim().toLowerCase();
-
-    if (str.includes(':')) {
-        let partes = str.split(':');
-        let horas = parseFloat(partes[0]) || 0;
-        let minutos = parseFloat(partes[1]) || 0;
-        return horas + (minutos / 60);
-    }
-
-    if (str.includes('h') || str.includes('m')) {
-        let horas = 0;
-        let minutos = 0;
-        let hMatch = str.match(/(\d+)\s*h/);
-        let mMatch = str.match(/(\d+)\s*m/);
-
-        if (hMatch) horas = parseFloat(hMatch[1]) || 0;
-        if (mMatch) minutos = parseFloat(mMatch[1]) || 0;
-
-        return horas + (minutos / 60);
-    }
-
-    return parseFloat(str) || 0;
+function calcular(){
+  const peso=numero('pesoFilamento'),tempo=parseTempoEmHoras($('tempoProducao').value);
+  const material=peso*numero('cfgFilamento')/1000;
+  const energia=tempo*numero('cfgEnergia');
+  const desgaste=tempo*numero('cfgDesgaste');
+  const parcial=material+energia+desgaste+numero('cfgEmbalagem');
+  custoBase=parcial*(1+numero('cfgPerda')/100)*(1+numero('cfgExtras')/100);
+  $('custoTotal').textContent=moeda(custoBase);
+  const multiplicador=numero('metaPercentual');
+  const meta=custoBase*multiplicador;
+  $('metaValor').textContent=moeda(meta);
+  ultimoPercentual=precoShopeeParaMeta(meta);
+  $('btnMeta').disabled=!ultimoPercentual;
+  const alvoFixo=custoBase+numero('lucroFixo');
+  ultimoFixo=precoShopeeParaMeta(alvoFixo);
+  $('precoFixo').textContent=ultimoFixo?moeda(ultimoFixo.preco):'Indisponível';
+  $('lucroReal').textContent=ultimoFixo?moeda(ultimoFixo.lucro):'—';
 }
-
-function calcularComissaoFixa(precoBruto) {
-    let comissaoPorcentagem = 0.14;
-    let taxaFixa = 26.00;
-    let faixaNome = "Acima de R$ 500,00";
-
-    if (precoBruto <= 79.99) {
-        comissaoPorcentagem = 0.20;
-        taxaFixa = 4.50;
-        faixaNome = "Até R$ 79,99 (20% + R$ 4,50)";
-    } else if (precoBruto <= 99.99) {
-        comissaoPorcentagem = 0.14;
-        taxaFixa = 16.00;
-        faixaNome = "R$ 80 a R$ 99,99 (14% + R$ 16)";
-    } else if (precoBruto <= 199.99) {
-        comissaoPorcentagem = 0.14;
-        taxaFixa = 20.00;
-        faixaNome = "R$ 100 a R$ 199,99 (14% + R$ 20)";
-    } else if (precoBruto <= 499.99) {
-        comissaoPorcentagem = 0.14;
-        taxaFixa = 26.00;
-        faixaNome = "R$ 200 a R$ 499,99 (14% + R$ 26)";
-    } else {
-        comissaoPorcentagem = 0.14;
-        taxaFixa = 26.00;
-        faixaNome = "Acima de R$ 500,00 (14% + R$ 26)";
-    }
-
-    return { comissaoPorcentagem, taxaFixa, faixaNome };
+function abrirDetalhes(modo){
+  const dados=modo==='fixo'?ultimoFixo:ultimoPercentual;
+  if(!dados)return;
+  $('modalTitulo').textContent=modo==='fixo'?'Shopee · Lucro fixo':'Shopee · Margem percentual';
+  $('modalPreco').textContent=moeda(dados.preco);
+  $('modalFaixa').textContent=dados.faixa.nome;
+  $('modalCusto').textContent=moeda(custoBase);
+  $('modalComissao').textContent=moeda(dados.comissao)+' ('+(dados.faixa.comissao*100).toFixed(0)+'%)';
+  $('modalTaxaFixa').textContent=moeda(dados.faixa.fixa);
+  $('modalFrete').textContent=moeda(dados.frete);
+  $('modalCpf').textContent=moeda(dados.cpf);
+  $('modalLiquido').textContent=moeda(dados.liquido);
+  $('modalLucro').textContent=moeda(dados.lucro);
+  $('shopeeModal').classList.add('visible');
 }
+function fecharModal(){$('shopeeModal').classList.remove('visible');}
+document.addEventListener('input',e=>{if(e.target.matches('#pesoFilamento,#tempoProducao,#cfgFilamento,#cfgEnergia,#cfgDesgaste,#cfgPerda,#cfgEmbalagem,#cfgExtras'))calcular();});
+document.addEventListener('change',e=>{if(e.target.matches('#metaPercentual,#lucroFixo,#freteGratis,#tipoConta'))calcular();});
 
-function calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxaCpf) {
-    const faixas = [
-        [0, 79.99],
-        [80, 99.99],
-        [100, 199.99],
-        [200, 499.99],
-        [500, Infinity]
-    ];
-
-    let melhorPreco = Infinity;
-
-    for (const [minimo, maximo] of faixas) {
-        const regras = calcularComissaoFixa(minimo);
-
-        const fator = 1 -
-            regras.comissaoPorcentagem -
-            taxaFreteExtraPercent;
-
-        if (fator <= 0) continue;
-
-        let preco = Math.max(
-            minimo,
-            (valorAlvo + regras.taxaFixa + taxaCpf) / fator
-        );
-
-        preco = Math.ceil(preco * 100 - 1e-9) / 100;
-
-        if (preco > maximo) continue;
-
-        const liquido =
-            preco * fator - regras.taxaFixa - taxaCpf;
-
-        if (liquido + 1e-7 < valorAlvo) {
-            preco = Number((preco + 0.01).toFixed(2));
-        }
-
-        if (preco <= maximo && preco < melhorPreco) {
-            melhorPreco = preco;
-        }
-    }
-
-    return melhorPreco;
+// Calculadora lateral: operações comuns, sem eval() nem bibliotecas externas.
+let atual='0',guardado=null,operador=null,novoNumero=false,expressao='';
+function exibirCalc(){
+  $('calcScreen').textContent=atual.replace('.',',');$('calcExpression').textContent=expressao||'\u00a0';
 }
-
-function calcular() {
-    const pesoGramas = parseFloat(document.getElementById('pesoFilamento').value) || 0;
-    const tempoInput = document.getElementById('tempoProducao').value;
-    const tempoHoras = parseTempoEmHoras(tempoInput);
-
-    const precoFilamentoKg = parseFloat(document.getElementById('cfgFilamento').value) || 120.00;
-    const custoEnergiaHora = parseFloat(document.getElementById('cfgEnergia').value) || 0.20;
-    const desgastePorHora = parseFloat(document.getElementById('cfgDesgaste').value) || 0.86;
-    const percPerda = (parseFloat(document.getElementById('cfgPerda').value) || 5) / 100;
-    const custoEmbalagem = parseFloat(document.getElementById('cfgEmbalagem').value) || 0.50;
-
-    const campoExtras = document.getElementById('cfgExtras');
-    const percExtras = campoExtras
-        ? Math.max(0, parseFloat(campoExtras.value) || 0) / 100
-        : 0.05;
-
-    const custoFilamentoPuro = (precoFilamentoKg / 1000) * pesoGramas;
-    const custoEnergia = tempoHoras * custoEnergiaHora;
-    const custoDesgaste = tempoHoras * desgastePorHora;
-
-    const somaParcial = custoFilamentoPuro + custoEnergia + custoDesgaste + custoEmbalagem;
-    const totalComPerda = somaParcial * (1 + percPerda);
-    const custoProducaoBase = totalComPerda * (1 + percExtras);
-
-    meta30Val = custoProducaoBase * 1.30;
-    meta40Val = custoProducaoBase * 1.40;
-    meta50Val = custoProducaoBase * 1.50;
-    meta70Val = custoProducaoBase * 1.70;
-    meta2xVal = custoProducaoBase * 2.00;
-    meta23xVal = custoProducaoBase * 2.30;
-
-    document.getElementById('val30').innerText = "R$ " + meta30Val.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes30').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val40').innerText = "R$ " + meta40Val.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes40').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val50').innerText = "R$ " + meta50Val.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes50').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val70').innerText = "R$ " + meta70Val.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes70').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val2x').innerText = "R$ " + meta2xVal.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes2x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
-
-    document.getElementById('val23x').innerText = "R$ " + meta23xVal.toFixed(2).replace('.', ',');
-    document.getElementById('detalhes23x').innerText = "Custo Base: R$ " + custoProducaoBase.toFixed(2).replace('.', ',');
+function operar(a,b,op){
+  if(op==='+')return a+b;if(op==='−')return a-b;
+  if(op==='×')return a*b;if(op==='÷')return b===0?NaN:a/b;
+  return b;
 }
-
-function abrirModalShopee(tituloCenario, valorAlvo) {
-    const taxaFreteExtraPercent = parseFloat(document.getElementById('freteGratis').value) || 0;
-    const usaCpf = document.getElementById('tipoConta').checked;
-    const taxaCpf = usaCpf ? 3.00 : 0.00;
-
-    const precoAnuncioShopee = calcularPrecoShopeeParaValorAlvo(valorAlvo, taxaFreteExtraPercent, taxaCpf);
-    const regras = calcularComissaoFixa(precoAnuncioShopee);
-
-    const valorComissao = precoAnuncioShopee * regras.comissaoPorcentagem;
-    const valorFreteExtra = precoAnuncioShopee * taxaFreteExtraPercent;
-    const totalTaxasFixas = regras.taxaFixa + taxaCpf + valorFreteExtra;
-
-    document.getElementById('modalTitulo').innerText = "Shopee: " + tituloCenario;
-    document.getElementById('modalPrecoFinal').innerText = "R$ " + precoAnuncioShopee.toFixed(2).replace('.', ',');
-    document.getElementById('modalFaixa').innerText = regras.faixaNome;
-    document.getElementById('modalComissao').innerText = "R$ " + valorComissao.toFixed(2).replace('.', ',') + ` (${(regras.comissaoPorcentagem*100).toFixed(0)}%)`;
-    document.getElementById('modalTaxas').innerText = "R$ " + totalTaxasFixas.toFixed(2).replace('.', ',');
-
-    document.getElementById('shopeeModal').style.display = 'flex';
+function formatarCalc(n){return Number.isFinite(n)?String(Number(n.toPrecision(12))):'Erro';}
+function calcPress(tecla){
+  if(tecla==='C'){atual='0';guardado=null;operador=null;novoNumero=false;expressao='';exibirCalc();return;}
+  if(tecla==='⌫'){if(novoNumero||atual==='Erro')atual='0';else atual=atual.length>1?atual.slice(0,-1):'0';novoNumero=false;exibirCalc();return;}
+  if(/^\d$/.test(tecla)){if(novoNumero||atual==='Erro'){atual=tecla;novoNumero=false;}else if(atual.replace('-','').replace('.','').length<14)atual=atual==='0'?tecla:atual+tecla;exibirCalc();return;}
+  if(tecla===','){if(novoNumero||atual==='Erro'){atual='0.';novoNumero=false;}else if(!atual.includes('.'))atual+='.';exibirCalc();return;}
+  if(tecla==='%'){atual=formatarCalc(Number(atual)/100);exibirCalc();return;}
+  if(['+','−','×','÷'].includes(tecla)){
+    if(operador!==null&&!novoNumero){atual=formatarCalc(operar(guardado,Number(atual),operador));if(atual==='Erro'){guardado=null;operador=null;exibirCalc();return;}}
+    guardado=Number(atual);operador=tecla;expressao=atual.replace('.',',')+' '+tecla;novoNumero=true;exibirCalc();return;
+  }
+  if(tecla==='='&&operador!==null){
+    const b=Number(atual);expressao=formatarCalc(guardado).replace('.',',')+' '+operador+' '+atual.replace('.',',')+' =';
+    atual=formatarCalc(operar(guardado,b,operador));guardado=null;operador=null;novoNumero=true;exibirCalc();
+  }
 }
-
-function fecharModalShopee() {
-    document.getElementById('shopeeModal').style.display = 'none';
-}
-
-window.onclick = function(event) {
-    const modal = document.getElementById('shopeeModal');
-
-    if (event.target == modal) {
-        modal.style.display = 'none';
-    }
-};
-
-window.onload = calcular;
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){fecharModal();return;}
+  if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;
+  const teclas={'/':'÷','*':'×','-':'−','.':',','Backspace':'⌫','Enter':'=','Delete':'C'};
+  const t=teclas[e.key]||e.key;if(/^\d$/.test(t)||['+','−','×','÷',',','%','=','⌫','C'].includes(t)){e.preventDefault();calcPress(t);}
+});
+calcular();exibirCalc();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(() => console.log('Service Worker registrado com sucesso!'))
-            .catch((err) => console.log('Erro ao registrar Service Worker:', err));
-    }
-</script>
-
 </body>
 </html>
